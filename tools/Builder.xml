@@ -1,0 +1,237 @@
+<project name="App Packager" basedir="../">
+	<description> </description>
+
+	<property name="proj.toolsDir" location="${basedir}/tools"/>
+	<property name="proj.projPropsFile" location="${proj.toolsDir}/project.properties"/>
+	<property name="proj.devPropsFile" location="${proj.toolsDir}/dev.properties"/>
+
+	<property file="${proj.projPropsFile}"/>
+
+	<taskdef resource="flexTasks.tasks" classpath="${proj.toolsDir}/flexTasks.jar"/>
+
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties" classpath="${proj.toolsDir}/ant-contrib-1.0b3.jar"/>
+
+
+	<target name="Beta:  Package ColorTrim" description="">
+		<antcall target="packageApp">
+			<param name="build.stream" value="beta"/>
+			<param name="appPropsFile" value="${proj.toolsDir}/_colortrim.properties"/>
+		</antcall>
+	</target>
+	<target name="Beta:  Package MediaGallery" description="">
+		<antcall target="packageApp">
+			<param name="build.stream" value="beta"/>
+			<param name="appPropsFile" value="${proj.toolsDir}/_mediagallery.properties"/>
+		</antcall>
+	</target>
+	<target name="Beta:  Package Performance" description="">
+		<antcall target="packageApp">
+			<param name="build.stream" value="beta"/>
+			<param name="appPropsFile" value="${proj.toolsDir}/_performance.properties"/>
+		</antcall>
+	</target>
+	<target name="Beta:  Package Power" description="">
+		<antcall target="packageApp">
+			<param name="build.stream" value="beta"/>
+			<param name="appPropsFile" value="${proj.toolsDir}/_power.properties"/>
+		</antcall>
+	</target>
+	<target name="Beta:  Package Roar" description="">
+		<antcall target="packageApp">
+			<param name="build.stream" value="beta"/>
+			<param name="appPropsFile" value="${proj.toolsDir}/_roar.properties"/>
+		</antcall>
+	</target>
+	<target name="Beta:  Package Wheelstand" description="">
+		<antcall target="packageApp">
+			<param name="build.stream" value="beta"/>
+			<param name="appPropsFile" value="${proj.toolsDir}/_wheelstand.properties"/>
+		</antcall>
+	</target>
+
+
+	<target name="Stable:  Package ColorTrim" description="">
+		<antcall target="packageApp">
+			<param name="build.stream" value="stable"/>
+			<param name="appPropsFile" value="${proj.toolsDir}/_colortrim.properties"/>
+		</antcall>
+	</target>
+	<target name="Stable:  Package MediaGallery" description="">
+		<antcall target="packageApp">
+			<param name="build.stream" value="stable"/>
+			<param name="appPropsFile" value="${proj.toolsDir}/_mediagallery.properties"/>
+		</antcall>
+	</target>
+	<target name="Stable:  Package Performance" description="">
+		<antcall target="packageApp">
+			<param name="build.stream" value="stable"/>
+			<param name="appPropsFile" value="${proj.toolsDir}/_performance.properties"/>
+		</antcall>
+	</target>
+	<target name="Stable:  Package Power" description="">
+		<antcall target="packageApp">
+			<param name="build.stream" value="stable"/>
+			<param name="appPropsFile" value="${proj.toolsDir}/_power.properties"/>
+		</antcall>
+	</target>
+	<target name="Stable:  Package Roar" description="">
+		<antcall target="packageApp">
+			<param name="build.stream" value="stable"/>
+			<param name="appPropsFile" value="${proj.toolsDir}/_roar.properties"/>
+		</antcall>
+	</target>
+	<target name="Stable:  Package Wheelstand" description="">
+		<antcall target="packageApp">
+			<param name="build.stream" value="stable"/>
+			<param name="appPropsFile" value="${proj.toolsDir}/_wheelstand.properties"/>
+		</antcall>
+	</target>
+
+
+
+	<target name="packageApp" depends="checkDevProps" if="${proj.devPropsFileExists}">
+		<property file="${proj.projPropsFile}"/>
+		<property file="${appPropsFile}"/>
+		<property file="${proj.devPropsFile}"/>
+
+		<antcall target="incrementBuild">
+			<param name="appPropsFile" value="${appPropsFile}"/>
+		</antcall>
+		<antcall target="buildTemplates">
+			<param name="appPropsFile" value="${appPropsFile}"/>
+			<param name="fromDir" value="${proj.templatesDir}/bin"/>
+			<param name="destDir" value="${proj.binDir}/${app.id}"/>
+			<param name="build.stream" value="${build.stream}"/>
+		</antcall>
+		<antcall target="buildTemplates">
+			<param name="appPropsFile" value="${appPropsFile}"/>
+			<param name="fromDir" value="${proj.templatesDir}/release"/>
+			<param name="destDir" value="${proj.releaseDir}/${build.stream}/${app.id}"/>
+			<param name="build.stream" value="${build.stream}"/>
+		</antcall>
+
+		<!-- This prop gets used inside the flex ant task -->
+		<property name="FLEX_HOME" location="${comp.sdk}"/>
+		<mxmlc file="${proj.srcDir}/${app.mainClass}" output="${proj.binDir}/${app.id}/${app.filename}.swf">
+			<load-config filename="${comp.sdk}/frameworks/air-config.xml"/>
+			<load-config filename="${comp.configFile}"/>
+			<compiler.debug>false</compiler.debug>             
+		</mxmlc>
+
+		<condition property="comp.adtPath" value="adt">
+			<os family="unix" />
+		</condition>
+		<condition property="comp.adtPath" value="adt.bat">
+			<os family="windows" />
+		</condition>
+
+		<!-- include all files in bin/{app} folder -->
+		<foreach target="listIncludes" param="file">
+    	    <path>
+    	        <fileset dir="${proj.binDir}/${app.id}">
+	    			<include name="*"/>
+	    		</fileset>
+    	    </path>
+    	</foreach>
+
+		<!-- include all pngs in icons folder -->
+		<foreach target="listIncludes" param="file">
+    	    <path>
+    	        <fileset dir="${basedir}/assets/icons">
+	    			<include name="*.png"/>
+	    		</fileset>
+    	    </path>
+    	</foreach>
+
+    	<loadfile srcfile="${proj.tempBuildDir}/includes.txt" property="comp.includes"/>
+    	<delete dir="${proj.tempBuildDir}"/>
+		
+		<exec executable="${comp.sdk}/bin/${comp.adtPath}" failonerror="true">
+			<arg line="-package" />
+			<arg line="-tsa none" />
+			<arg line="-storetype pkcs12" />
+			<arg line="-keystore ${comp.key}" />
+			<arg line="-storepass spinifex" />
+			<arg line="${proj.releaseDir}/${build.stream}/${app.id}/${app.filename}.air" />
+			<arg line="${proj.binDir}/${app.id}/${proj.manifestname}" />
+			<arg line="${comp.includes}" />
+
+		</exec>
+
+		<antcall target="createVersionedPackage">
+			<param name="appPropsFile" value="${appPropsFile}"/>
+			<param name="dir" value="${proj.releaseDir}/${build.stream}/${app.id}"/>
+			<param name="filename" value="${app.filename}"/>
+		</antcall>
+	</target>
+
+	<target name="listIncludes">
+		<basename property="file.basename" file="${file}"/>
+		<dirname property="file.dirname" file="${file}"/>
+		<echo file="${proj.tempBuildDir}/includes.txt" append="true" message=" -C ${file.dirname} ${file.basename}"/>
+	</target>
+	
+
+	<target name="checkDevProps">
+		<!-- check if Dev config file has been created yet -->
+		<available property="proj.devPropsFileExists" file="${proj.devPropsFile}"/>
+		<antcall target="devPropsError"/>
+	</target>
+	<target name="devPropsError" unless="${proj.devPropsFileExists}">
+		<echo message="Error: ${proj.devPropsFile} file has not yet been created."/>
+	</target>
+
+	<target name="incrementBuild">
+		<propertyfile file="${appPropsFile}">
+			<entry key="build.number" type="int" operation="+" default="0"/>
+		</propertyfile>
+		<property file="${appPropsFile}"/>
+		
+		<echo message="Build number is ${build.majVersion}.${build.minVersion}.${build.number}"/>
+	</target>
+		
+	<!-- Copies all files from a template folder to a temporary location, replaces build details in all files, then copies the results over the destination dir -->
+	<target name="buildTemplates">
+		<copy todir="${proj.tempBuildDir}">
+			<fileset dir="${fromDir}">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+		
+		<replace dir="${proj.tempBuildDir}" token="app.remoteInstallerFile" value="http://${ftp.remoteDomain}/${proj.name}/${build.stream}/${app.id}/${app.filename}.air">
+		  <include name="**/*"/>
+		</replace>
+		<replace dir="${proj.tempBuildDir}" token="build.stream" value="${build.stream}">
+		  <include name="**/*"/>
+		</replace>
+		<replace dir="${proj.tempBuildDir}" replacefilterfile="${proj.projPropsFile}">
+		  <include name="**/*"/>
+		</replace>
+		<replace dir="${proj.tempBuildDir}" replacefilterfile="${proj.devPropsFile}">
+		  <include name="**/*"/>
+		</replace>
+		<replace dir="${proj.tempBuildDir}" replacefilterfile="${appPropsFile}">
+		  <include name="**/*"/>
+		</replace>
+		
+		<copy todir="${destDir}">
+			<fileset dir="${proj.tempBuildDir}">
+				<include name="**/*"/>
+				<exclude name="**/Thumbs.db"/>
+			</fileset>
+		</copy>
+		
+		<delete dir="${proj.tempBuildDir}"/>
+	</target>
+	
+	<target name="createVersionedPackage">
+		<property file="${appPropsFile}"/>
+
+		<property name="appFile" location="${dir}/${filename}.air"/>
+		<property name="versionedAppFile" location="${dir}/${filename}.${build.majVersion}.${build.minVersion}.air"/>
+		
+		<copy tofile="${versionedAppFile}">
+			<fileset file="${appFile}"/>
+		</copy>
+	</target>
+</project>

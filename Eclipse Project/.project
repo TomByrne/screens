@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>Screens</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+	</buildSpec>
+	<natures>
+	</natures>
+
+	<linkedResources>
+
+		<link>
+			<name>tools</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/tools</locationURI>
+		</link>
+
+		<link>
+			<name>test</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/test</locationURI>
+		</link>
+
+		<link>
+			<name>xslt</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/xslt</locationURI>
+		</link>
+
+	</linkedResources>
+</projectDescription>
