@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <container>
-	<layout type="vertical"/>
+	<layout type="horizontal"/>
+	<text-button id="testButton"/>
+	<checkbox id="testCheckbox"/>
+	<text-input id="testInput"/>
 </container>

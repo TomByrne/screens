@@ -1,1 +1,6 @@
-﻿<?xml version="1.0" encoding="utf-8"?><archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="8.00" />
+﻿<?xml version="1.0" encoding="utf-8"?><archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="8.00"><object class="IBUIView">
+	
+	<object class="IBUIButton" id="testButton" />
+	<object class="IBUISwitch" id="testCheckbox" />
+	<object class="IBUITextField" id="testInput" />
+</object></archive>

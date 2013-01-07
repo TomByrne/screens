@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:android="http://schemas.android.com/apk/res/android">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 
 	<xsl:template match="container">
 		<xsl:if test="layout[@type='horizontal' or @type='vertical']">
-			<LinearLayout>
-				<xsl:attribute name="android:orientation">
-					<xsl:value-of select="layout/@type"/>
-				</xsl:attribute>
-
+			<StackPanel>
+				<xsl:if test="layout[@type='horizontal']">
+					<xsl:attribute name="Orientation">Horizontal</xsl:attribute>
+				</xsl:if>
 				<xsl:apply-templates/>
-			</LinearLayout>
+			</StackPanel>
 		</xsl:if>
 	</xsl:template>
 
@@ -26,16 +25,15 @@
 	</xsl:template>
 
 	<xsl:template match="text-input">
-		<EditText>
+		<TextBox>
 			<xsl:apply-templates select="node()|@*"/>
-		</EditText>
+		</TextBox>
 	</xsl:template>
 
 	
 	<xsl:template match="@id">
-		<xsl:attribute name="android:id">
+		<xsl:attribute name="x:Name">
 			<xsl:value-of select="."/>
 		</xsl:attribute>
 	</xsl:template>
-
 </xsl:stylesheet>
